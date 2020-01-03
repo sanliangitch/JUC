@@ -22,7 +22,7 @@ public class MetaspaceOOMT {
         try{
             while (true){
                 i++;
-                
+
             }
         }catch (Throwable e){
             System.out.println("********多少次后发生了异常："+i);
