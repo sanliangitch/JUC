@@ -94,6 +94,12 @@ public interface ExecutorService extends Executor {
       *   在使用限时任务时需要注意，当这些任务超时后应该立即停止，从而避免为继续计算一个不再使用的结果而浪费计算资源。要实现这个功能，可以由任务本身来管理它的限定时间，并且在超时后中止执行或取消任务。此时可再次使用Future,如果一个限时的get方法抛出了TimcoutException,那么可以通过Future来取消任务。
       * [详情代码](https://github.com/sanliangitch/JUC/blob/master/renderer/Renderer.java)
 ```java
+/**
+* 在指定时间内获取广告信息
+*
+* Future.get的一种典型应用。在它生成的页面中包括响应用户请求的内容以及从广告服务器上获得的广告。它将获取广告的任务提交给一个Executor,
+* 然后计算剩余的文本页面内容，最后等待广告信息，直到超出指定的时间。如果get超时，那么将取消广告获取任务，并转而使用默认的广告信息。
+*/
 Page renderPageWithAd() throws InterruptedException{
         long endNanos = System.nanoTime() + TIME_BUDGET;
         Future<Ad> f = (Future<Ad>) executor.submit(new FetchAdTask());
@@ -118,6 +124,15 @@ Page renderPageWithAd() throws InterruptedException{
    * 从一个公司获得报价的过程与从其他公司获得报价的过程无关，因此可以将获取报价的过程当成一个任务，从而使获得报价的过程能并发执行。创建n个任务，将其提交到一个线程池，保留n个Future,并使用限时的get方法通过Future串行地获取每一个结果，这一切都很简单，但还有一个更简单的方法一invokeAll。
    * [详情代码](https://github.com/sanliangitch/JUC/blob/master/renderer/QuoteTask.java)
 ```java
+/**
+* 使用了支持限时的invokeAll,将多个任务提交到一个ExecutorService并获得结果。
+*
+* InvokeAll 方法的参数为一组任务，并返回一组Future.这两个集合有着相同的结构。
+* invokeAll按照任务集合中迭代器的顺序将所有的Future添加到返回的集合中，从而使调用者能将各个Future与其表示的Callable关联起来。
+* 当所有任务都执行完毕时，或者调用线程被中断时，又或者超过指定时限时，invokeAll 将返回。
+* 当超过指定时限后，任何还未完成的任务都会取消。
+* 当invokeAll返回后，每个任务要么正常地完成，要么被取消，而客户端代码可以调用get或isCancelled来判断究竟是何种情况。
+*/
 public List<TravelQuote> getRankedTravelQuote(
             TravelInfo travelInfo,
         Set<TravelCompany> companies,
