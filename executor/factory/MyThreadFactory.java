@@ -1,4 +1,4 @@
-package executor;
+package executor.factory;
 
 import java.util.concurrent.ThreadFactory;
 
