@@ -157,4 +157,25 @@ public List<TravelQuote> getRankedTravelQuote(
         Collections.sort(quotes,ranking);
         return quotes;
     }
- ```     
+ ```   
+ 
+ ## 取消与关闭
+  [示例代码](https://github.com/sanliangitch/JUC/tree/master/interruption)
+  
+## 线程池的使用
+    >只有当任务都是同类型的并且相互独立时，线程池的性能才能达到最佳。如果将运行时间较长的与运行时间较短的任务混合在一起，那么除非线程池很大，否则将可能造成“拥塞”。如果提交的任务依赖于其他任务，那么除非线程池无限大，否则将可能造成死锁。
+* [使用 Semaphore(信号量) 来控制任务的提交速率](https://github.com/sanliangitch/JUC/blob/master/executor/BoundedExecutor.java)
+* **线程工厂**
+   *  每当线程池需要创建一个线程时，都是通过线程工厂方法(ThreadFactory)来完成的。默认的线程工厂方法将创建一个新的、非守护的线程，并且不包含特殊的配置信息。通过指定一个线程工厂方法，可以定制线程池的配置信息。在ThreadFactory中只定义了一个方法newThread,每当线程池需要创建一个新线程时都会调用这个方法。
+   *  然而，在许多情况下都需要使用定制的线程工厂方法。例如，你希望为线程池中的线程指定一个UncaughtExceptionHandler,或者实例化一个定制的Thread类用于执行调试信息的记录。你还可能希望修改线程的优先级(这通常并不是一个好主意。)或者守护状态(同样，这也不是一个好主意。)。或许你只是希望给线程取一个更有意义的名称，用来解释线程的转储信息和错误日志。
+   * [自定义线程池工厂](https://github.com/sanliangitch/JUC/blob/master/executor/factory/MyAppThread.java)
+* **扩展 ThreadPoolExecutor**
+   * ThreadPoolExecutor是可扩展的，它提供了几个可以在子类化中改写的方法: _beforeExecute_、*afterExecute*和*terminated*,这些方法可以用于扩展ThreadPoolExecutor的行为。
+   * 在执行任务的线程中将调用beforeExecute和afterExecute等方法，在这些方法中还可以添加日志、计时、监视或统计信息收集的功能。无论任务是从run中正常返回，还是抛出一个异常而返回，afterExecute 都会被调用。(如果任务在完成后带有一个Error,那么就不会调用afterExecute。)如果beforeExecute抛出一个RuntimeException，那么任务将不被执行，并且afterExecute也不会被调用。
+   *  在线程池完成关闭操作时调用terminated,也就是在所有任务都已经完成并且所有工作者.线程也已经关闭后。terminated 可以用来释放Executor在其生命周期里分配的各种资源，此外还可以执行发送通知、记录日志或者收集finalize统计信息等操作。
+   * [给线程池添加了统计信息](https://github.com/sanliangitch/JUC/blob/master/executor/TimingThreadPool.java)
+* [递归算法的并行化](https://github.com/sanliangitch/JUC/blob/master/executor/Recursion.java)
+
+* 示例：谜题框架
+   * 我们将“谜题”定义为:包含了一个初始位置，一个目标位置，以及用于判断是否是有效移动的规则集。规则集包含两部分:计算从指定位置开始的所有合法移动，以及每次移动的结果位置。在程序[Puzzle](https://github.com/sanliangitch/JUC/blob/master/executor/puzzle/Puzzle.java)给出了表示谜题的抽象类，其中的类型参数P和M表示位置类和移动类。根据这个接口，我们可以写一个简单的串行求解程序，该程序将在谜题空间(Puzzle :Space)中查找，直到找到一个解答或者找遍了整个空间都没有发现答案。
+   * [谜题框架示例](https://github.com/sanliangitch/JUC/blob/master/executor/puzzle/Puzzle.java)
