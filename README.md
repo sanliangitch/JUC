@@ -194,7 +194,7 @@ public List<TravelQuote> getRankedTravelQuote(
    * 糟糕的相应性
    * 活锁
 ## 性能与可伸缩性
-* [阿姆达尔定律](https://baike.baidu.com/item/%E9%98%BF%E5%A7%86%E8%BE%BE%E5%B0%94%E5%AE%9A%E5%BE%8B/10386960?fr=aladdin)
+* [阿姆达尔定律：S=1/(1-a+a/n)](https://baike.baidu.com/item/%E9%98%BF%E5%A7%86%E8%BE%BE%E5%B0%94%E5%AE%9A%E5%BE%8B/10386960?fr=aladdin)
 * 线程引入的开销
    * 上下文切换
    * 内存同步
@@ -241,10 +241,10 @@ public List<TravelQuote> getRankedTravelQuote(
    * 分析与检测工具
    
 ## synchronized和ReentrantLock之间的选择
-在一些内置锁无法满足需求的情况下，ReentrantLock可以作为一种高级工具。当需要一些高级功能时才应该使用ReentrantLock,这些功能包括:可定时的、可轮询的与可中断的锁获取操作，公平队列，以及非块结构的锁。否则，还是应该优先使用synchronized.
+在一些内置锁无法满足需求的情况下，ReentrantLock可以作为一种高级工具。当需要一些高级功能时才应该使用ReentrantLock,这些功能包括:可定时的、可轮询的与可中断的锁获取操作，公平队列，以及非块结构的锁。否则，还是应该**优先使用synchronized**.
 
 * java.util.concurrent 同步器类中的AQS  <p>
   java.util.concurrent中的许多可阻塞类，例如ReentrantLock、Semaphore、 ReentrantRead-WriteLock、CountDownLatch、 SynchronousQueue 和FutureTask等，都是基于AQS构建的。
 * ReentrantReadWriteLock
-  ReadWriteLock接口表示存在两个锁:一个读取锁和一个写人锁，但在基于AQS实现的ReentrantReadWriteLock中，单个AQS子类将同时管理读取加锁和写人加锁。Reentrant-ReadWriteLock使用了一个16位的状态来表示写入锁的计数，并且使用了另一个16位的状态来表示读取锁的计数。在读取锁上的操作将使用共享的获取方法与释放方法，在写人锁上的操作将使用独占的获取方法与释放方法。
+  ReadWriteLock接口表示存在两个锁:一个读取锁和一个写人锁，但在基于AQS实现的ReentrantReadWriteLock中，单个AQS子类将同时管理读取加锁和写人加锁。Reentrant-ReadWriteLock使用了一个16位的状态来表示写入锁的计数，并且使用了另一个16位的状态来表示读取锁的计数。在读取锁上的操作将使用共享的获取方法与释放方法，在写人锁上的操作将使用独占的获取方法与释放方法。 <p>
   AQS在内部维护一个等待线程队列，其中记录了某个线程请求的是独占访问还是共享访问。在ReentrantReadWriteLock中，当锁可用时，如果位于队列头部的线程执行写入操作，那么线程会得到这个锁，如果位于队列头部的线程执行读取访问，那么队列中在第一个写入线程之前的所有线程都将获得这个锁。
